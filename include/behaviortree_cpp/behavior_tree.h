@@ -20,6 +20,7 @@
 
 #include "behaviortree_cpp/controls/sequence_star_node.h"
 #include "behaviortree_cpp/controls/fallback_star_node.h"
+#include "behaviortree_cpp/controls/priority_fallback.h"
 
 #include "behaviortree_cpp/action_node.h"
 #include "behaviortree_cpp/condition_node.h"

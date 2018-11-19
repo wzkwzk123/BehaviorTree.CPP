@@ -21,6 +21,7 @@ BehaviorTreeFactory::BehaviorTreeFactory()
     registerNodeType<FallbackStarNode>("FallbackStar");
     registerNodeType<SequenceNode>("Sequence");
     registerNodeType<SequenceStarNode>("SequenceStar");
+    registerNodeType<PriorityFallbackNode>("PrioritySequence");
 
     registerNodeType<InverterNode>("Inverter");
     registerNodeType<RetryNode>("RetryUntilSuccesful");

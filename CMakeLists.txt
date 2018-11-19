@@ -93,6 +93,7 @@ list(APPEND BT_SOURCE
     src/controls/sequence_star_node.cpp
     src/controls/fallback_node.cpp
     src/controls/fallback_star_node.cpp
+    src/controls/priority_fallback.cpp
 
     src/loggers/bt_cout_logger.cpp
     src/loggers/bt_file_logger.cpp
