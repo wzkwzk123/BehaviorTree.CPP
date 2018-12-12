@@ -2,6 +2,28 @@
 Changelog for package behaviortree_cpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.5.0 (2018-12-12)
+------------------
+* Introducing SyncActionNode that is more self explaining and less ambiguous
+* fix potential problem related to ControlNode::haltChildren()
+* Adding example/test of navigation and recovery behavior. Related to issue #36
+* Contributors: Davide Faconti
+
+2.4.4 (2018-12-12)
+------------------
+* adding virtual TreeNode::onInit() [issue #33]
+* fix issue #34 : if you don't implement convertFromString, it will compile but it may throw
+* Pretty demangled names and obsolate comments removed
+* bug fixes
+* more comments
+* [enhancement #32]: add CoroActionNode and rename ActionNode as "AsynActionNode"
+  The name ActionNode was confusing and it has been deprecated.
+* Update README.md
+* removed old file
+* Fix issue #31 : convertFromString mandatory for TreeNode::getParam, not Blackboard::get
+* Cherry piking changes from PR #19 which solve issue #2 CONAN support
+* Contributors: Davide Faconti
+
 2.4.3 (2018-12-07)
 ------------------
 * Merge branch 'master' into ros2
