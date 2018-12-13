@@ -11,6 +11,14 @@ os:
 compiler:
   - gcc
 
+
+addons:
+    apt:
+        sources:
+            - ubuntu-toolchain-r-test
+        packages:
+            - lcov
+
 matrix:
     include:
       - bare_linux:
@@ -42,7 +50,27 @@ before_script:
   - mkdir -p build
   
 script:
-  - if [ "$ROS_DISTRO"  = "none" ]; then (cd build; cmake .. ; sudo cmake --build . --target install; ./bin/behaviortree_cpp_test); fi
+  - if [ "$ROS_DISTRO"  = "none" ]; then (cd build; cmake .. ; sudo cmake -DCMAKE_BUILD_TYPE=Debug -DADD_COVERAGE=ON --build . --target install; ./bin/behaviortree_cpp_test); fi
   - if [ "$ROS_DISTRO" != "none" ]; then (.ci_config/travis.sh); fi
 
 
+
+after_success:
+    # Creating report
+  - cd ${TRAVIS_BUILD_DIR}
+  - lcov --directory . --capture --output-file coverage.info # capture coverage info
+  - lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out system
+  - lcov --list coverage.info #debug info
+  # Uploading report to CodeCov
+  - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+  
+env:
+  global:
+  - LANG="en_US.UTF-8"
+    
+notifications:
+  email:
+    recipients:
+    - davide.faconti@gmail.com
+    on_success: change
+    on_failure: always  
