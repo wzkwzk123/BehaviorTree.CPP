@@ -1,8 +1,8 @@
 #include "behaviortree_cpp/decorators/subtree_node.h"
 
 
-BT::DecoratorSubtreeNode::DecoratorSubtreeNode(const std::string &name) :
-  DecoratorNode(name, NodeParameters())
+BT::DecoratorSubtreeNode::DecoratorSubtreeNode(const std::string &name, const NodeParameters &params) :
+  DecoratorNode(name, params)
 {
     setRegistrationName("SubTree");
 }

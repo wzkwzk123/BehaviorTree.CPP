@@ -8,9 +8,20 @@ namespace BT
 class DecoratorSubtreeNode : public DecoratorNode
 {
   public:
-    DecoratorSubtreeNode(const std::string& name);
+    DecoratorSubtreeNode(const std::string& name, const NodeParameters& params);
 
     virtual ~DecoratorSubtreeNode() override = default;
+
+    void onInit()
+    {
+        // store params in local blackboard TODO
+    }
+
+    static const NodeParameters& requiredNodeParameters()
+    {
+        static NodeParameters params;
+        return params;
+    }
 
   private:
     virtual BT::NodeStatus tick() override;

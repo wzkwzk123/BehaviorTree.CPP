@@ -372,8 +372,6 @@ TreeNode::Ptr XMLParser::instantiateTree(std::vector<TreeNode::Ptr>& nodes,
                                    const NodeParameters& params,
                                    TreeNode::Ptr parent) -> TreeNode::Ptr
     {
-
-
         TreeNode::Ptr child_node;
 
         if( _p->factory.builders().count(ID) != 0)
@@ -381,7 +379,7 @@ TreeNode::Ptr XMLParser::instantiateTree(std::vector<TreeNode::Ptr>& nodes,
             child_node = _p->factory.instantiateTreeNode(ID, name, params, blackboard);
         }
         else if( _p->tree_roots.count(ID) != 0) {
-            child_node = std::unique_ptr<TreeNode>( new DecoratorSubtreeNode(name) );
+            child_node = std::unique_ptr<TreeNode>( new DecoratorSubtreeNode(name, params) );
         }
         else{
             throw std::runtime_error( ID + " is not a registered node, nor a Subtree");
