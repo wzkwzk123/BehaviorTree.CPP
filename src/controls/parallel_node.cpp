@@ -21,20 +21,20 @@ constexpr const char* ParallelNode::THRESHOLD_KEY;
 ParallelNode::ParallelNode(const std::string& name, int threshold)
   : ControlNode::ControlNode(name, {{THRESHOLD_KEY, std::to_string(threshold)}}),
     threshold_(threshold),
-    read_parameter_from_blackboard_(false)
+    read_parameter_from_input_port_(false)
 {
     setRegistrationName("Parallel");
 }
 
 ParallelNode::ParallelNode(const std::string &name,
-                               const NodeParameters &params)
-    : ControlNode::ControlNode(name, params),
-      read_parameter_from_blackboard_(false)
+                               const NodePorts &ports)
+    : ControlNode::ControlNode(name, ports),
+      read_parameter_from_input_port_(false)
 {
-    read_parameter_from_blackboard_ = isBlackboardPattern( params.at(THRESHOLD_KEY) );
-    if(!read_parameter_from_blackboard_)
+    read_parameter_from_input_port_ = isBlackboardPattern( params.at(THRESHOLD_KEY) );
+    if(!read_parameter_from_input_port_)
     {
-        if( !getParam(THRESHOLD_KEY, threshold_) )
+        if( !getInput(THRESHOLD_KEY, threshold_) )
         {
             throw std::runtime_error("Missing parameter [threshold] in ParallelNode");
         }
@@ -43,9 +43,9 @@ ParallelNode::ParallelNode(const std::string &name,
 
 NodeStatus ParallelNode::tick()
 {
-    if(read_parameter_from_blackboard_)
+    if(read_parameter_from_input_port_)
     {
-        if( !getParam(THRESHOLD_KEY, threshold_) )
+        if( !getInput(THRESHOLD_KEY, threshold_) )
         {
             throw std::runtime_error("Missing parameter [threshold] in ParallelNode");
         }

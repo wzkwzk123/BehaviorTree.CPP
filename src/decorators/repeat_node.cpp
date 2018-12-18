@@ -18,7 +18,7 @@ namespace BT
 constexpr const char* RepeatNode::NUM_CYCLES;
 
 RepeatNode::RepeatNode(const std::string& name, unsigned int NTries)
-  : DecoratorNode(name, {{NUM_CYCLES, std::to_string(NTries)}}),
+  : DecoratorNode(name, {}),
     num_cycles_(NTries),
     try_index_(0),
     read_parameter_from_blackboard_(false)
@@ -26,26 +26,18 @@ RepeatNode::RepeatNode(const std::string& name, unsigned int NTries)
     setRegistrationName("Repeat");
 }
 
-RepeatNode::RepeatNode(const std::string& name, const NodeParameters& params)
-  : DecoratorNode(name, params),
+RepeatNode::RepeatNode(const std::string& name, const NodePorts& ports)
+  : DecoratorNode(name, ports),
     try_index_(0),
-    read_parameter_from_blackboard_(false)
+    read_parameter_from_blackboard_(true)
 {
-    read_parameter_from_blackboard_ = isBlackboardPattern( params.at(NUM_CYCLES) );
-    if(!read_parameter_from_blackboard_)
-    {
-        if( !getParam(NUM_CYCLES, num_cycles_) )
-        {
-            throw std::runtime_error("Missing parameter [num_cycles] in RepeatNode");
-        }
-    }
 }
 
 NodeStatus RepeatNode::tick()
 {
     if( read_parameter_from_blackboard_ )
     {
-        if( !getParam(NUM_CYCLES, num_cycles_) )
+        if( !getInput(NUM_CYCLES, num_cycles_) )
         {
             throw std::runtime_error("Missing parameter [num_cycles] in RepeatNode");
         }

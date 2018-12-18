@@ -21,8 +21,8 @@ template <typename T>
 class BlackboardPreconditionNode : public DecoratorNode
 {
   public:
-    BlackboardPreconditionNode(const std::string& name, const NodeParameters& params)
-      : DecoratorNode(name, params)
+    BlackboardPreconditionNode(const std::string& name, const NodePorts& ports)
+      : DecoratorNode(name, ports)
     {
         if( std::is_same<T,int>::value)
             setRegistrationName("BlackboardCheckInt");
@@ -34,10 +34,10 @@ class BlackboardPreconditionNode : public DecoratorNode
 
     virtual ~BlackboardPreconditionNode() override = default;
 
-    static const NodeParameters& requiredNodeParameters()
+    static const NodePortsSet& nodePortsModel()
     {
-        static NodeParameters params = {{"key", ""}, {"expected", "*"}};
-        return params;
+        static NodePortsSet ports_set = {{"key", ""}, {"expected", "*"}};
+        return ports_set;
     }
 
   private:
@@ -46,34 +46,34 @@ class BlackboardPreconditionNode : public DecoratorNode
 
 //----------------------------------------------------
 
-template<typename T> inline
-NodeStatus BlackboardPreconditionNode<T>::tick()
-{
-    std::string key;
-    T expected_value;
-    T current_value;
+//template<typename T> inline
+//NodeStatus BlackboardPreconditionNode<T>::tick()
+//{
+//    std::string key;
+//    T expected_value;
+//    T current_value;
 
-    getParam("key", key);
-    setStatus(NodeStatus::RUNNING);
+//    getInput("key", key);
+//    setStatus(NodeStatus::RUNNING);
 
-    // check if the key is present in the blackboard
-    if ( !blackboard() ||  !(blackboard()->contains(key)) )
-    {
-        return NodeStatus::FAILURE;
-    }
+//    // check if the key is present in the blackboard
+//    if ( !blackboard() ||  !(blackboard()->contains(key)) )
+//    {
+//        return NodeStatus::FAILURE;
+//    }
 
-    if( initializationParameters().at("expected") == "*" )
-    {
-        return child_node_->executeTick();
-    }
+//    if( ports().at("expected") == "*" ) //FIXME
+//    {
+//        return child_node_->executeTick();
+//    }
 
-    bool same = ( getParam("expected", expected_value) &&
-                  blackboard()->get(key, current_value) &&
-                  current_value == expected_value ) ;
+//    bool same = ( getInput("expected", expected_value) &&
+//                  blackboard()->get(key, current_value) &&
+//                  current_value == expected_value ) ;
 
-    return same ? child_node_->executeTick() :
-                  NodeStatus::FAILURE;
-}
+//    return same ? child_node_->executeTick() :
+//                  NodeStatus::FAILURE;
+//}
 
 }
 

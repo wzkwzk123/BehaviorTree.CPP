@@ -8,7 +8,7 @@ namespace BT
 class DecoratorSubtreeNode : public DecoratorNode
 {
   public:
-    DecoratorSubtreeNode(const std::string& name, const NodeParameters& params);
+    DecoratorSubtreeNode(const std::string& name, const NodePorts& ports);
 
     virtual ~DecoratorSubtreeNode() override = default;
 
@@ -17,10 +17,10 @@ class DecoratorSubtreeNode : public DecoratorNode
         // store params in local blackboard TODO
     }
 
-    static const NodeParameters& requiredNodeParameters()
+    static const NodePortsSet& nodePortsModel()
     {
-        static NodeParameters params;
-        return params;
+        static NodePortsSet ports_set; // no default
+        return ports_set;
     }
 
   private:

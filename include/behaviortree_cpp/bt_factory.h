@@ -26,15 +26,14 @@
 namespace BT
 {
 /// The term "Builder" refers to the Builder Pattern (https://en.wikipedia.org/wiki/Builder_pattern)
-typedef std::function<std::unique_ptr<TreeNode>(const std::string&, const NodeParameters&)>
+typedef std::function<std::unique_ptr<TreeNode>(const std::string&, const NodePorts&)>
     NodeBuilder;
 
-/// This information is used mostly by the XMLParser.
 struct TreeNodeManifest
 {
-    NodeType type;
-    std::string registration_ID;
-    NodeParameters required_parameters;
+    NodeType     type;
+    std::string  registration_ID;
+    NodePortsSet ports_set;
 };
 
 const char PLUGIN_SYMBOL[] = "BT_RegisterNodesFromPlugin";
@@ -84,7 +83,7 @@ class BehaviorTreeFactory
      * @return         new node.
      */
     std::unique_ptr<TreeNode> instantiateTreeNode(const std::string& ID, const std::string& name,
-                                                  const NodeParameters& params,
+                                                  const NodePorts& ports,
                                                   const Blackboard::Ptr& blackboard) const;
 
     /** registerNodeType is the method to use to register your custom TreeNode.
@@ -108,23 +107,26 @@ class BehaviorTreeFactory
                       "[registerBuilder]: Some methods are pure virtual. "
                       "Did you override the methods tick() and halt()?");
 
-        constexpr bool default_constructable = std::is_constructible<T, const std::string&>::value;
+        constexpr bool default_constructable =
+                std::is_constructible<T, const std::string&>::value;
+
         constexpr bool param_constructable =
-            std::is_constructible<T, const std::string&, const NodeParameters&>::value;
-        constexpr bool has_static_required_parameters =
-            has_static_method_requiredNodeParameters<T>::value;
+                std::is_constructible<T, const std::string&, const NodePorts&>::value;
+
+        constexpr bool  has_static_port_model =
+                has_static_method_nodePortsModel<T>::value;
 
         static_assert(default_constructable || param_constructable,
                       "[registerBuilder]: the registered class must have at least one of these two "
                       "constructors: "
                       "  (const std::string&, const NodeParameters&) or (const std::string&).");
 
-        static_assert(!(param_constructable && !has_static_required_parameters),
+        static_assert(!(param_constructable && ! has_static_port_model),
                       "[registerBuilder]: you MUST implement the static method: "
-                      "  const NodeParameters& requiredNodeParameters();\n");
+                      "  const NodePortsSet& nodePortsModel();\n");
 
-        static_assert(!(has_static_required_parameters && !param_constructable),
-                      "[registerBuilder]: since you have a static method requiredNodeParameters(), "
+        static_assert(!(has_static_port_model && !param_constructable),
+                      "[registerBuilder]: since you have a static method requiredNodePorts(), "
                       "you MUST add a constructor sign signature (const std::string&, const "
                       "NodeParameters&)\n");
 
@@ -144,65 +146,64 @@ class BehaviorTreeFactory
     std::vector<TreeNodeManifest> manifests_;
     std::set<std::string> builtin_IDs_;
 
+
+    void sortTreeNodeManifests();
+
+
     // template specialization = SFINAE + black magic
 
     // clang-format off
+
     template <typename T>
     using has_default_constructor = typename std::is_constructible<T, const std::string&>;
 
     template <typename T>
-    using has_params_constructor  = typename std::is_constructible<T, const std::string&, const NodeParameters&>;
+    using has_params_constructor  = typename std::is_constructible<T, const std::string&, const NodePorts&>;
+
 
     template <typename T, typename = void>
-    struct has_static_method_requiredNodeParameters: std::false_type {};
+    struct has_static_method_nodePortsModel: std::false_type {};
 
     template <typename T>
-    struct has_static_method_requiredNodeParameters<T,
-            typename std::enable_if<std::is_same<decltype(T::requiredNodeParameters()), const NodeParameters&>::value>::type>
+    struct has_static_method_nodePortsModel<T,
+            typename std::enable_if<std::is_same<decltype(T::nodePortsModel()), const NodePortsSet&>::value>::type>
         : std::true_type {};
 
     template <typename T>
-    typename std::enable_if< has_default_constructor<T>::value && !has_params_constructor<T>::value>::type
+     typename std::enable_if< has_default_constructor<T>::value && !has_params_constructor<T>::value>::type
     registerNodeTypeImpl(const std::string& ID)
     {
-        NodeBuilder builder = [](const std::string& name, const NodeParameters&)
+        NodeBuilder builder = [](const std::string& name, const NodePorts&)
         {
             return std::unique_ptr<TreeNode>(new T(name));
         };
-        TreeNodeManifest manifest = { NodeType::ACTION, ID, NodeParameters() };
+        TreeNodeManifest manifest = { NodeType::ACTION, ID, {} };
         registerBuilder(manifest, builder);
     }
 
     template <typename T>
-    typename std::enable_if< !has_default_constructor<T>::value && has_params_constructor<T>::value>::type
+    typename std::enable_if< has_params_constructor<T>::value && has_static_method_nodePortsModel<T>::value >::type
     registerNodeTypeImpl(const std::string& ID)
     {
-        NodeBuilder builder = [](const std::string& name, const NodeParameters& params)
+        NodeBuilder builder = [](const std::string& name, const NodePorts& ports)
         {
-            return std::unique_ptr<TreeNode>(new T(name, params));
+            return std::unique_ptr<TreeNode>(new T(name, ports));
         };
-        TreeNodeManifest manifest = { getType<T>(), ID, T::requiredNodeParameters() };
+        TreeNodeManifest manifest = { getType<T>(), ID, T::nodePortsModel() };
         registerBuilder(manifest, builder);
     }
 
     template <typename T>
-    typename std::enable_if< has_default_constructor<T>::value && has_params_constructor<T>::value>::type
+    typename std::enable_if< has_params_constructor<T>::value && !has_static_method_nodePortsModel<T>::value >::type
     registerNodeTypeImpl(const std::string& ID)
     {
-        NodeBuilder builder = [](const std::string& name, const NodeParameters& params)
+        NodeBuilder builder = [](const std::string& name, const NodePorts& ports)
         {
-            if( params.empty() )
-            {
-                // call this one that MIGHT use default initialization
-                return std::unique_ptr<TreeNode>(new T(name));
-            }
-            return std::unique_ptr<TreeNode>(new T(name, params));
+            return std::unique_ptr<TreeNode>(new T(name, ports));
         };
-        TreeNodeManifest manifest = { getType<T>(), ID, T::requiredNodeParameters() };
+        TreeNodeManifest manifest = { getType<T>(), ID, {} };
         registerBuilder(manifest, builder);
     }
-
-    void sortTreeNodeManifests();
 
     // clang-format on
 };

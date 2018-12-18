@@ -31,7 +31,7 @@ class ActionNodeBase : public LeafNode
 {
   public:
 
-    ActionNodeBase(const std::string& name, const NodeParameters& parameters = NodeParameters());
+    ActionNodeBase(const std::string& name, const NodePorts& ports = NodePorts());
     ~ActionNodeBase() override = default;
 
     virtual NodeStatus executeTick() override;
@@ -51,7 +51,7 @@ class SyncActionNode : public ActionNodeBase
 {
   public:
 
-    SyncActionNode(const std::string& name, const NodeParameters& parameters = NodeParameters());
+    SyncActionNode(const std::string& name, const NodePorts& ports = NodePorts());
     ~SyncActionNode() override = default;
 
     virtual NodeStatus executeTick() override;
@@ -81,7 +81,7 @@ class SimpleActionNode : public ActionNodeBase
 
     // Constructor: you must provide the function to call when tick() is invoked
     SimpleActionNode(const std::string& name, TickFunctor tick_functor,
-                     const NodeParameters &params = NodeParameters());
+                     const NodePorts& ports = NodePorts());
 
     ~SimpleActionNode() override = default;
 
@@ -111,7 +111,7 @@ class AsyncActionNode : public ActionNodeBase
 {
   public:
 
-    AsyncActionNode(const std::string& name, const NodeParameters& parameters = NodeParameters());
+    AsyncActionNode(const std::string& name, const NodePorts& ports = NodePorts());
     virtual ~AsyncActionNode() override;
 
     // This method triggers the TickEngine. Do NOT remove the "final" keyword.
@@ -159,7 +159,7 @@ class CoroActionNode : public ActionNodeBase
 {
   public:
     // Constructor
-    CoroActionNode(const std::string& name, const NodeParameters& parameters = NodeParameters());
+    CoroActionNode(const std::string& name, const NodePorts& ports = NodePorts());
     virtual ~CoroActionNode() override;
 
     /** When you want to return RUNNING and temporary "pause"

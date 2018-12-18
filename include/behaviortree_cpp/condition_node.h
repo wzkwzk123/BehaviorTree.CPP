@@ -21,12 +21,12 @@ namespace BT
 class ConditionNode : public LeafNode
 {
   public:
-    ConditionNode(const std::string& name, const NodeParameters& parameters = NodeParameters());
+    ConditionNode(const std::string& name, const NodePorts& ports = NodePorts());
 
     virtual ~ConditionNode() override = default;
 
     // The method used to interrupt the execution of the node
-    virtual void halt() override;
+    virtual void halt() override final;
 
     virtual NodeType type() const override final
     {
@@ -52,14 +52,9 @@ class SimpleConditionNode : public ConditionNode
 
     // Constructor: you must provide the function to call when tick() is invoked
     SimpleConditionNode(const std::string& name, TickFunctor tick_functor,
-                        const NodeParameters& params = NodeParameters());
+                        const NodePorts& ports = NodePorts());
 
     ~SimpleConditionNode() override = default;
-
-    virtual void halt() override
-    {
-        // not supported
-    }
 
   protected:
     virtual NodeStatus tick() override;

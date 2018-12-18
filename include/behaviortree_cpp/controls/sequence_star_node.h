@@ -37,24 +37,24 @@ class SequenceStarNode : public ControlNode
   public:
     SequenceStarNode(const std::string& name, bool reset_on_failure = true);
 
-    // Reset policy passed by parameter [reset_policy]
-    SequenceStarNode(const std::string& name, const NodeParameters& params);
+    // Reset policy passed by parameter [reset_on_failure]
+    SequenceStarNode(const std::string& name, const NodePorts& ports);
 
     virtual ~SequenceStarNode() override = default;
 
     virtual void halt() override;
 
-    static const NodeParameters& requiredNodeParameters()
+    static const NodePortsSet& nodePortsModel()
     {
-        static NodeParameters params = {{RESET_PARAM, "true"}};
-        return params;
+        static NodePortsSet ports_set = {{RESET_PARAM}, {}};
+        return ports_set;
     }
 
   private:
     unsigned int current_child_idx_;
     bool reset_on_failure_;
 
-    bool read_parameter_from_blackboard_;
+    bool read_parameter_from_input_port_;
     static constexpr const char* RESET_PARAM = "reset_on_failure";
 
     virtual BT::NodeStatus tick() override;

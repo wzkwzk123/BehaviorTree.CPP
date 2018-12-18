@@ -11,9 +11,9 @@ BT_REGISTER_NODES(factory)
 BT::NodeStatus MoveBaseAction::tick()
 {
     Pose2D goal;
-    if (getParam<Pose2D>("goal", goal) == false)
+    if (getInput<Pose2D>("goal", goal) == false)
     {
-        auto default_goal_value = requiredNodeParameters().at("goal");
+        auto default_goal_value = requiredNodePorts().at("goal");
         // use the convertFromString function
         goal = BT::convertFromString<Pose2D>(default_goal_value);
     }

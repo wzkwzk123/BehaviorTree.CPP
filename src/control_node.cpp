@@ -15,8 +15,8 @@
 
 namespace BT
 {
-ControlNode::ControlNode(const std::string& name, const NodeParameters& parameters)
-  : TreeNode::TreeNode(name, parameters)
+ControlNode::ControlNode(const std::string& name, const NodePorts& ports)
+  : TreeNode::TreeNode(name, ports)
 {
     // TODO(...) In case it is desired to set to idle remove the ReturnStatus
     // type in order to set the member variable

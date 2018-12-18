@@ -20,29 +20,29 @@ namespace BT
 class SetBlackboard : public SyncActionNode
 {
   public:
-    SetBlackboard(const std::string& name, const NodeParameters& params)
-      : SyncActionNode(name, params)
+    SetBlackboard(const std::string& name, const NodePorts& ports)
+      : SyncActionNode(name, ports)
     {
     }
 
-    static const NodeParameters& requiredNodeParameters()
+    static const NodePortsSet& nodePortsModel()
     {
-        static NodeParameters params = {{"key", ""}, {"value", ""}};
-        return params;
+        static NodePortsSet ports_set = {{"key", ""}, {"value", ""}};
+        return ports_set;
     }
 
   private:
     virtual BT::NodeStatus tick() override
     {
         std::string key;
-        if (!blackboard() || !getParam("key", key) || key.empty())
+        if (!blackboard() || !getInput("key", key) || key.empty())
         {
             return NodeStatus::FAILURE;
         }
         else
         {
             std::string value;
-            getParam("value", value);
+            getInput("value", value);
             blackboard()->set(key, value);
             return NodeStatus::SUCCESS;
         }

@@ -12,7 +12,7 @@ class DecoratorNode : public TreeNode
 
   public:
     // Constructor
-    DecoratorNode(const std::string& name, const NodeParameters& parameters);
+    DecoratorNode(const std::string& name, const NodePorts& ports);
 
     virtual ~DecoratorNode() override = default;
 
@@ -51,7 +51,7 @@ class SimpleDecoratorNode : public DecoratorNode
 
     // Constructor: you must provide the function to call when tick() is invoked
     SimpleDecoratorNode(const std::string& name, TickFunctor tick_functor,
-                        const NodeParameters& params = NodeParameters());
+                        const NodePorts& ports = NodePorts());
 
     ~SimpleDecoratorNode() override = default;
 

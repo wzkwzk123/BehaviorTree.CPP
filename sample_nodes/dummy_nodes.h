@@ -48,7 +48,7 @@ class SaySomething : public BT::SyncActionNode
 {
   public:
     SaySomething(const std::string& name, const BT::NodeParameters& params)
-      : BT::SyncActionNode(name, params)
+      : BT::SyncActionNode(name, ports)
     {
     }
 
@@ -57,10 +57,10 @@ class SaySomething : public BT::SyncActionNode
 
     // It is mandatory to define this static method.
     // If you don't, BehaviorTreeFactory::registerNodeType will not compile.
-    static const BT::NodeParameters& requiredNodeParameters()
+    static const BT::NodePortsSet& nodePortsModel()
     {
-        static BT::NodeParameters params = {{"message", ""}};
-        return params;
+        static BT::NodePortsSet ports_set = {{"message", ""}};
+        return ports_set;
     }
 };
 

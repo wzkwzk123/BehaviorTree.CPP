@@ -20,7 +20,7 @@ namespace BT
 class ForceSuccessDecorator : public DecoratorNode
 {
   public:
-    ForceSuccessDecorator(const std::string& name) : DecoratorNode(name, NodeParameters())
+    ForceSuccessDecorator(const std::string& name) : DecoratorNode(name, NodePorts())
     {
         setRegistrationName("ForceSuccess");
     }

@@ -20,7 +20,7 @@ namespace BT
 class ForceFailureDecorator : public DecoratorNode
 {
   public:
-    ForceFailureDecorator(const std::string& name) : DecoratorNode(name, NodeParameters())
+    ForceFailureDecorator(const std::string& name) : DecoratorNode(name, NodePorts())
     {
         setRegistrationName("ForceFailure");
     }

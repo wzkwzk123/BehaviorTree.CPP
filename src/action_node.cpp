@@ -16,8 +16,8 @@
 
 namespace BT
 {
-ActionNodeBase::ActionNodeBase(const std::string& name, const NodeParameters& parameters)
-  : LeafNode::LeafNode(name, parameters)
+ActionNodeBase::ActionNodeBase(const std::string& name, const NodePorts& ports)
+  : LeafNode::LeafNode(name, ports)
 {
 }
 
@@ -37,8 +37,8 @@ NodeStatus ActionNodeBase::executeTick()
 
 SimpleActionNode::SimpleActionNode(const std::string& name,
                                    SimpleActionNode::TickFunctor tick_functor,
-                                   const NodeParameters& params)
-  : ActionNodeBase(name, params), tick_functor_(std::move(tick_functor))
+                                   const NodePorts& ports)
+  : ActionNodeBase(name, ports), tick_functor_(std::move(tick_functor))
 {
 }
 
@@ -62,8 +62,8 @@ NodeStatus SimpleActionNode::tick()
 
 //-------------------------------------------------------
 
-AsyncActionNode::AsyncActionNode(const std::string& name, const NodeParameters& parameters)
-  : ActionNodeBase(name, parameters), loop_(true)
+AsyncActionNode::AsyncActionNode(const std::string& name, const NodePorts& ports)
+  : ActionNodeBase(name, ports), loop_(true)
 {
     thread_ = std::thread(&AsyncActionNode::waitForTick, this);
 }
@@ -126,8 +126,8 @@ struct CoroActionNode::Pimpl
 
 
 CoroActionNode::CoroActionNode(const std::string &name,
-                               const NodeParameters &parameters):
-  ActionNodeBase (name, parameters),
+                               const NodePorts &ports):
+  ActionNodeBase (name, ports),
   _p(new  Pimpl)
 {
 }
@@ -173,8 +173,8 @@ void CoroActionNode::halt()
     }
 }
 
-SyncActionNode::SyncActionNode(const std::string &name, const NodeParameters &parameters):
-    ActionNodeBase(name, parameters)
+SyncActionNode::SyncActionNode(const std::string &name, const NodePorts &ports):
+    ActionNodeBase(name, ports)
 {}
 
 NodeStatus SyncActionNode::executeTick()

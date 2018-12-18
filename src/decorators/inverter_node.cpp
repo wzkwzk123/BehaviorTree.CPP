@@ -15,7 +15,7 @@
 
 namespace BT
 {
-InverterNode::InverterNode(const std::string& name) : DecoratorNode(name, NodeParameters())
+InverterNode::InverterNode(const std::string& name) : DecoratorNode(name, NodePorts())
 {
     setRegistrationName("Inverter");
 }

@@ -22,12 +22,12 @@ static uint8_t getUID()
     return uid++;
 }
 
-TreeNode::TreeNode(const std::string& name, const NodeParameters& parameters)
+TreeNode::TreeNode(const std::string& name, const NodePorts& ports)
   : not_initialized_(true),
     name_(name),
     status_(NodeStatus::IDLE),
     uid_(getUID()),
-    parameters_(parameters)
+    ports_(ports)
 
 {
 }
@@ -134,9 +134,5 @@ const std::string& TreeNode::registrationName() const
     return registration_name_;
 }
 
-const NodeParameters& TreeNode::initializationParameters() const
-{
-    return parameters_;
-}
 
 }   // end namespace

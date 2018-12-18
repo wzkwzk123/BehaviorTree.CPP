@@ -24,12 +24,12 @@ class ParallelNode : public ControlNode
 
     ParallelNode(const std::string& name, int threshold);
 
-    ParallelNode(const std::string& name, const NodeParameters& params);
+    ParallelNode(const std::string& name, const NodePorts& ports);
 
-    static const NodeParameters& requiredNodeParameters()
+    static const NodePortsSet& nodePortsModel()
     {
-        static NodeParameters params = {{THRESHOLD_KEY, "1"}};
-        return params;
+        static NodePortsSet ports_set = { {THRESHOLD_KEY},{} };
+        return ports_set;
     }
 
     ~ParallelNode() = default;
@@ -44,7 +44,7 @@ class ParallelNode : public ControlNode
     unsigned int success_childred_num_;
     unsigned int failure_childred_num_;
 
-    bool read_parameter_from_blackboard_;
+    bool read_parameter_from_input_port_;
     static constexpr const char* THRESHOLD_KEY = "threshold";
 
     virtual BT::NodeStatus tick() override;

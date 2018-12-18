@@ -73,7 +73,7 @@ int main()
     {
         Point3D goal;
         // thanks to paren_node, you can access easily the NodeParameters and the blackboard
-        parent_node.getParam("goal", goal);
+        parent_node.getInput("goal", goal);
 
         // you can write and read the blackboard if you like
         //parent_node.blackboard() ....

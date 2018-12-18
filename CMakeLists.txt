@@ -26,9 +26,9 @@ list(APPEND BEHAVIOR_TREE_EXTERNAL_LIBRARIES ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_D
 
 if( ZMQ_FOUND )
     message(STATUS "ZeroMQ found.")
-    add_definitions( -DZMQ_FOUND )
-    list(APPEND BT_SOURCE src/loggers/bt_zmq_publisher.cpp)
-    list(APPEND BEHAVIOR_TREE_EXTERNAL_LIBRARIES zmq)
+#    add_definitions( -DZMQ_FOUND )
+#    list(APPEND BT_SOURCE src/loggers/bt_zmq_publisher.cpp)
+#    list(APPEND BEHAVIOR_TREE_EXTERNAL_LIBRARIES zmq)
 else()
     message(WARNING "ZeroMQ NOT found. Skipping the build of [PublisherZMQ] and [bt_recorder].")
 endif()
@@ -119,7 +119,7 @@ list(APPEND BT_SOURCE
     src/controls/fallback_star_node.cpp
 
     src/loggers/bt_cout_logger.cpp
-    src/loggers/bt_file_logger.cpp
+#    src/loggers/bt_file_logger.cpp
     src/loggers/bt_minitrace_logger.cpp
 
     3rdparty/tinyXML2/tinyxml2.cpp

@@ -50,10 +50,10 @@ BT::NodeStatus ApproachObject::tick()
 BT::NodeStatus SaySomething::tick()
 {
     std::string msg;
-    if (getParam("message", msg) == false)
+    if (getInput("message", msg) == false)
     {
-        // if getParam failed, use the default value
-        msg = requiredNodeParameters().at("message");
+        // if getInput failed, use the default value
+        msg = requiredNodePorts().at("message");
     }
     std::cout << "Robot says: " << msg << std::endl;
     return BT::NodeStatus::SUCCESS;

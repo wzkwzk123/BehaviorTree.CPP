@@ -16,7 +16,7 @@
 namespace BT
 {
 FallbackNode::FallbackNode(const std::string& name)
-  : ControlNode::ControlNode(name, NodeParameters())
+  : ControlNode::ControlNode(name, NodePorts())
 {
     setRegistrationName("Fallback");
 }

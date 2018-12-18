@@ -369,17 +369,17 @@ TreeNode::Ptr XMLParser::instantiateTree(std::vector<TreeNode::Ptr>& nodes,
 
     //--------------------------------------
     NodeBuilder node_builder = [&](const std::string& ID, const std::string& name,
-                                   const NodeParameters& params,
+                                   const NodePorts& ports,
                                    TreeNode::Ptr parent) -> TreeNode::Ptr
     {
         TreeNode::Ptr child_node;
 
         if( _p->factory.builders().count(ID) != 0)
         {
-            child_node = _p->factory.instantiateTreeNode(ID, name, params, blackboard);
+            child_node = _p->factory.instantiateTreeNode(ID, name, ports, blackboard);
         }
         else if( _p->tree_roots.count(ID) != 0) {
-            child_node = std::unique_ptr<TreeNode>( new DecoratorSubtreeNode(name, params) );
+            child_node = std::unique_ptr<TreeNode>( new DecoratorSubtreeNode(name, ports) );
         }
         else{
             throw std::runtime_error( ID + " is not a registered node, nor a Subtree");
@@ -428,7 +428,7 @@ TreeNode::Ptr BT::XMLParser::Pimpl::treeParsing(const tinyxml2::XMLElement* root
         const std::string element_name = element->Name();
         std::string node_ID;
         std::string node_alias;
-        NodeParameters node_params;
+        NodePorts   node_ports;
 
         // Actions and Decorators have their own ID
         if (element_name == "Action" || element_name == "Decorator" || element_name == "Condition")

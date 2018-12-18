@@ -24,14 +24,14 @@ class RepeatNode : public DecoratorNode
     // Constructor
     RepeatNode(const std::string& name, unsigned int NTries);
 
-    RepeatNode(const std::string& name, const NodeParameters& params);
+    RepeatNode(const std::string& name, const NodePorts& ports);
 
     virtual ~RepeatNode() override = default;
 
-    static const NodeParameters& requiredNodeParameters()
+    static const NodePortsSet& nodePortsModel()
     {
-        static NodeParameters params = {{NUM_CYCLES, "1"}};
-        return params;
+        static NodePortsSet ports_set = {{NUM_CYCLES},{}};
+        return ports_set;
     }
 
   private:

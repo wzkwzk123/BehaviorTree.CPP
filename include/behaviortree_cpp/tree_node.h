@@ -17,7 +17,7 @@
 #include <iostream>
 #include <string>
 #include <map>
-#include <set>
+#include <unordered_set>
 
 #include "behaviortree_cpp/optional.hpp"
 #include "behaviortree_cpp/tick_engine.h"
@@ -30,10 +30,28 @@ namespace BT
 {
 // We call Parameters the set of Key/Values that can be read from file and are
 // used to parametrize an object. It is up to the user's code to parse the string.
-typedef std::unordered_map<std::string, std::string> NodeParameters;
+//typedef std::unordered_map<std::string, std::string> NodeParameters;
+
+struct NodePortsSet
+{
+    std::unordered_set<std::string> input_keys;
+    std::unordered_set<std::string> output_keys;
+};
+
+
+struct NodePorts
+{
+    std::unordered_map<std::string, const SafeAny::Any*> input;
+    std::unordered_map<std::string, const SafeAny::Any*> output;
+
+    std::unordered_map<std::string, std::string> input_alias;
+    std::unordered_map<std::string, std::string> output_alias;
+};
 
 typedef std::chrono::high_resolution_clock::time_point TimePoint;
 typedef std::chrono::high_resolution_clock::duration Duration;
+
+
 
 // Abstract base class for Behavior Tree Nodes
 class TreeNode
@@ -51,13 +69,13 @@ class TreeNode
      * @brief TreeNode main constructor.
      *
      * @param name         name of the instance, not the type of sensor.
-     * @param parameters   this might be empty. use getParam<T>(key) to parse the value.
+     * @param parameters   this might be empty. use getInput<T>(key) to parse the value.
      *
      * Note: a node that accepts a not empty set of NodeParameters must also implement the method:
      *
-     * static const NodeParameters& requiredNodeParameters();
+     * static const NodePortsSet& nodePortsModel();
      */
-    TreeNode(const std::string& name, const NodeParameters& parameters);
+    TreeNode(const std::string& name, const NodePorts& ports);
     virtual ~TreeNode() = default;
 
     typedef std::shared_ptr<TreeNode> Ptr;
@@ -109,22 +127,30 @@ class TreeNode
 
     /// Parameters passed at construction time. Can never change after the
     /// creation of the TreeNode instance.
-    const NodeParameters& initializationParameters() const;
+    const std::unordered_map<std::string, const SafeAny::Any*>& inputPorts() const
+    {
+        return ports_.input;
+    }
+
+    const std::unordered_map<std::string, const SafeAny::Any*>& outputPorts() const
+    {
+        return ports_.output;
+    }
 
     /** Get a parameter from the NodeParameters and convert it to type T.
      */
     template <typename T>
-    BT::optional<T> getParam(const std::string& key) const
+    BT::optional<T> getInput(const std::string& key) const
     {
         T out;
-        return getParam(key, out) ? std::move(out) : BT::nullopt;
+        return getInput(key, out) ? std::move(out) : BT::nullopt;
     }
 
     /** Get a parameter from the passed NodeParameters and convert it to type T.
      *  Return false either if there is no parameter with this key or if conversion failed.
      */
     template <typename T>
-    bool getParam(const std::string& key, T& destination) const;
+    bool getInput(const std::string& key, T& destination) const;
 
     static bool isBlackboardPattern(StringView str);
 
@@ -157,34 +183,34 @@ class TreeNode
 
     std::string registration_name_;
 
-    const NodeParameters parameters_;
+    const NodePorts ports_;
 
     Blackboard::Ptr bb_;
 
 };
 
 //-------------------------------------------------------
-
+/*
 
 template <typename T> inline
-bool TreeNode::getParam(const std::string& key, T& destination) const
+bool TreeNode::getInput(const std::string& key, T& destination) const
 {
-    auto it = parameters_.find(key);
-    if (it == parameters_.end())
+    auto it = ports_.input.find(key);
+    if (it == ports_.input.end())
     {
         return false;
     }
-    const std::string& str = it->second;
+    const std::string& str = it;
 
     try
     {
         bool bb_pattern = isBlackboardPattern(str);
         if( bb_pattern && not_initialized_)
         {
-             std::cerr << "you are calling getParam inside a constructor, but this is not allowed "
+             std::cerr << "you are calling getInput inside a constructor, but this is not allowed "
                           "when the parameter contains a blackboard.\n"
-                          "You should call getParam inside your tick() method"<< std::endl;
-             std::logic_error("Calling getParam inside a constructor");
+                          "You should call getInput inside your tick() method"<< std::endl;
+             std::logic_error("Calling getInput inside a constructor");
         }
         // check if it follows this ${pattern}, if it does, search inside the blackboard
         if ( bb_pattern && blackboard() )
@@ -212,11 +238,11 @@ bool TreeNode::getParam(const std::string& key, T& destination) const
     }
     catch (std::runtime_error& err)
     {
-        std::cout << "Exception at getParam(" << key << "): " << err.what() << std::endl;
+        std::cout << "Exception at getInput(" << key << "): " << err.what() << std::endl;
         return false;
     }
 }
-
+*/
 
 }
 

@@ -20,7 +20,7 @@ namespace BT
 class AlwaysFailure : public SyncActionNode
 {
   public:
-    AlwaysFailure(const std::string& name) : SyncActionNode(name, NodeParameters())
+    AlwaysFailure(const std::string& name) : SyncActionNode(name, NodePorts())
     {
     }
 
