@@ -52,8 +52,7 @@ BT::NodeStatus SaySomething::tick()
     std::string msg;
     if (getInput("message", msg) == false)
     {
-        // if getInput failed, use the default value
-        msg = requiredNodePorts().at("message");
+        throw std::runtime_error("missing key [message]");
     }
     std::cout << "Robot says: " << msg << std::endl;
     return BT::NodeStatus::SUCCESS;

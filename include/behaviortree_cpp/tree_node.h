@@ -28,9 +28,6 @@
 
 namespace BT
 {
-// We call Parameters the set of Key/Values that can be read from file and are
-// used to parametrize an object. It is up to the user's code to parse the string.
-//typedef std::unordered_map<std::string, std::string> NodeParameters;
 
 struct NodePortsSet
 {
@@ -41,16 +38,13 @@ struct NodePortsSet
 
 struct NodePorts
 {
-    std::unordered_map<std::string, const SafeAny::Any*> input;
-    std::unordered_map<std::string, const SafeAny::Any*> output;
-
-    std::unordered_map<std::string, std::string> input_alias;
-    std::unordered_map<std::string, std::string> output_alias;
+    NodePortsSet model;
+    std::unordered_map<std::string, std::string> input_params;
+    std::unordered_map<std::string, std::string> output_remap;
 };
 
 typedef std::chrono::high_resolution_clock::time_point TimePoint;
 typedef std::chrono::high_resolution_clock::duration Duration;
-
 
 
 // Abstract base class for Behavior Tree Nodes
@@ -125,18 +119,6 @@ class TreeNode
     /// registrationName is the ID used by BehaviorTreeFactory to create an instance.
     const std::string& registrationName() const;
 
-    /// Parameters passed at construction time. Can never change after the
-    /// creation of the TreeNode instance.
-    const std::unordered_map<std::string, const SafeAny::Any*>& inputPorts() const
-    {
-        return ports_.input;
-    }
-
-    const std::unordered_map<std::string, const SafeAny::Any*>& outputPorts() const
-    {
-        return ports_.output;
-    }
-
     /** Get a parameter from the NodeParameters and convert it to type T.
      */
     template <typename T>
@@ -153,6 +135,11 @@ class TreeNode
     bool getInput(const std::string& key, T& destination) const;
 
     static bool isBlackboardPattern(StringView str);
+
+    const std::unordered_map<std::string, std::string>& inputParameters() const
+    {
+        return ports_.input_params;
+    }
 
   protected:
     /// Method to be implemented by the user
@@ -190,17 +177,16 @@ class TreeNode
 };
 
 //-------------------------------------------------------
-/*
 
 template <typename T> inline
 bool TreeNode::getInput(const std::string& key, T& destination) const
 {
-    auto it = ports_.input.find(key);
-    if (it == ports_.input.end())
+    auto it = ports_.input_params.find(key);
+    if (it == ports_.input_params.end())
     {
         return false;
     }
-    const std::string& str = it;
+    const std::string& str = it->second;
 
     try
     {
@@ -242,7 +228,7 @@ bool TreeNode::getInput(const std::string& key, T& destination) const
         return false;
     }
 }
-*/
+
 
 }
 

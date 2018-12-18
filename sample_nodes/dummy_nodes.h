@@ -47,7 +47,7 @@ class ApproachObject : public BT::SyncActionNode
 class SaySomething : public BT::SyncActionNode
 {
   public:
-    SaySomething(const std::string& name, const BT::NodeParameters& params)
+    SaySomething(const std::string& name, const BT::NodePorts& ports)
       : BT::SyncActionNode(name, ports)
     {
     }

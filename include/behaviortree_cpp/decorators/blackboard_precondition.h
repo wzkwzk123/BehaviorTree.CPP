@@ -46,34 +46,35 @@ class BlackboardPreconditionNode : public DecoratorNode
 
 //----------------------------------------------------
 
-//template<typename T> inline
-//NodeStatus BlackboardPreconditionNode<T>::tick()
-//{
-//    std::string key;
-//    T expected_value;
-//    T current_value;
+template<typename T> inline
+NodeStatus BlackboardPreconditionNode<T>::tick()
+{
+    std::string key;
+    T expected_value;
+    T current_value;
 
-//    getInput("key", key);
-//    setStatus(NodeStatus::RUNNING);
+    getInput("key", key);
+    setStatus(NodeStatus::RUNNING);
 
-//    // check if the key is present in the blackboard
-//    if ( !blackboard() ||  !(blackboard()->contains(key)) )
-//    {
-//        return NodeStatus::FAILURE;
-//    }
+    // check if the key is present in the blackboard
+    if ( !blackboard() ||  !(blackboard()->contains(key)) )
+    {
+        return NodeStatus::FAILURE;
+    }
 
-//    if( ports().at("expected") == "*" ) //FIXME
-//    {
-//        return child_node_->executeTick();
-//    }
+    std::string expected_string = "";
+    if( getInput<std::string>("expected", expected_string) && expected_string == "*")
+    {
+       return child_node_->executeTick();
+    }
 
-//    bool same = ( getInput("expected", expected_value) &&
-//                  blackboard()->get(key, current_value) &&
-//                  current_value == expected_value ) ;
+    bool same = ( getInput<T>("expected",expected_value) &&
+                  blackboard()->get(key, current_value) &&
+                  current_value == expected_value ) ;
 
-//    return same ? child_node_->executeTick() :
-//                  NodeStatus::FAILURE;
-//}
+    return same ? child_node_->executeTick() :
+                  NodeStatus::FAILURE;
+}
 
 }
 

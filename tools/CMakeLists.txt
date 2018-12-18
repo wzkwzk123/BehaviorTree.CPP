@@ -6,12 +6,12 @@ target_link_libraries(bt_log_cat  ${BEHAVIOR_TREE_LIBRARY} )
 install(TARGETS bt_log_cat
         DESTINATION ${BEHAVIOR_TREE_BIN_DESTINATION} )
 
-if( ZMQ_FOUND )
-    add_executable(bt_recorder         bt_recorder.cpp )
-    target_link_libraries(bt_recorder  ${BEHAVIOR_TREE_LIBRARY} )
-    install(TARGETS bt_recorder
-            DESTINATION ${BEHAVIOR_TREE_BIN_DESTINATION} )
-endif()
+#if( ZMQ_FOUND )
+#    add_executable(bt_recorder         bt_recorder.cpp )
+#    target_link_libraries(bt_recorder  ${BEHAVIOR_TREE_LIBRARY} )
+#    install(TARGETS bt_recorder
+#            DESTINATION ${BEHAVIOR_TREE_BIN_DESTINATION} )
+#endif()
 
 add_executable(bt_plugin_manifest         bt_plugin_manifest.cpp )
 target_link_libraries(bt_plugin_manifest  ${BEHAVIOR_TREE_LIBRARY} )

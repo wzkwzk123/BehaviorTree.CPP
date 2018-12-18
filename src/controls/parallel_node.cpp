@@ -18,8 +18,8 @@ namespace BT
 
 constexpr const char* ParallelNode::THRESHOLD_KEY;
 
-ParallelNode::ParallelNode(const std::string& name, int threshold)
-  : ControlNode::ControlNode(name, {{THRESHOLD_KEY, std::to_string(threshold)}}),
+ParallelNode::ParallelNode(const std::string& name, unsigned threshold)
+  : ControlNode::ControlNode(name, {}),
     threshold_(threshold),
     read_parameter_from_input_port_(false)
 {
@@ -29,16 +29,9 @@ ParallelNode::ParallelNode(const std::string& name, int threshold)
 ParallelNode::ParallelNode(const std::string &name,
                                const NodePorts &ports)
     : ControlNode::ControlNode(name, ports),
-      read_parameter_from_input_port_(false)
+      read_parameter_from_input_port_(true)
 {
-    read_parameter_from_input_port_ = isBlackboardPattern( params.at(THRESHOLD_KEY) );
-    if(!read_parameter_from_input_port_)
-    {
-        if( !getInput(THRESHOLD_KEY, threshold_) )
-        {
-            throw std::runtime_error("Missing parameter [threshold] in ParallelNode");
-        }
-    }
+    setRegistrationName("Parallel");
 }
 
 NodeStatus ParallelNode::tick()

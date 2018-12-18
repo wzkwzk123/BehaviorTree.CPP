@@ -51,7 +51,7 @@ class MoveBaseAction : public BT::AsyncActionNode
   public:
     // If your TreeNode requires a NodeParameter, you must define a constructor
     // with this signature.
-    MoveBaseAction(const std::string& name, const BT::NodeParameters& params)
+    MoveBaseAction(const std::string& name, const BT::NodePorts& ports)
       : AsyncActionNode(name, ports)
     {
     }

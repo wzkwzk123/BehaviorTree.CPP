@@ -460,11 +460,11 @@ TreeNode::Ptr BT::XMLParser::Pimpl::treeParsing(const tinyxml2::XMLElement* root
             const std::string attribute_name = att->Name();
             if (attribute_name != "ID" && attribute_name != "name")
             {
-                node_params[attribute_name] = att->Value();
+                node_ports.input_params[attribute_name] = att->Value();
             }
         }
 
-        TreeNode::Ptr node = node_builder(node_ID, node_alias, node_params, parent);
+        TreeNode::Ptr node = node_builder(node_ID, node_alias, node_ports, parent);
         nodes.push_back(node);
 
         for (auto child_element = element->FirstChildElement(); child_element;
@@ -490,7 +490,9 @@ std::string writeXML(const BehaviorTreeFactory& factory,
                      const TreeNode* root_node,
                      bool compact_representation)
 {
-    using namespace tinyxml2;
+    return {}; //TODO FIXME
+}
+ /*   using namespace tinyxml2;
 
     XMLDocument doc;
 
@@ -589,7 +591,7 @@ std::string writeXML(const BehaviorTreeFactory& factory,
     tinyxml2::XMLPrinter printer;
     doc.Print(&printer);
     return std::string(printer.CStr(), printer.CStrSize() - 1);
-}
+}*/
 
 Tree buildTreeFromText(const BehaviorTreeFactory& factory, const std::string& text,
                        const Blackboard::Ptr& blackboard)
