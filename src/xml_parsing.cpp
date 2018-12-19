@@ -29,11 +29,8 @@ namespace BT
 struct XMLParser::Pimpl
 {
     TreeNode::Ptr treeParsing(const tinyxml2::XMLElement* root_element,
-                              const NodeBuilder& node_builder,
                               std::vector<TreeNode::Ptr>& nodes,
                               const TreeNode::Ptr& root_parent);
-
-    void openIncludedFiles();
 
     void loadDocImpl(tinyxml2::XMLDocument *doc);
 
@@ -368,17 +365,19 @@ TreeNode::Ptr XMLParser::instantiateTree(std::vector<TreeNode::Ptr>& nodes,
     }
 
     //--------------------------------------
-    NodeBuilder node_builder = [&](const std::string& ID, const std::string& name,
-                                   const NodeParameters& params,
-                                   TreeNode::Ptr parent) -> TreeNode::Ptr
+    auto node_builder = [&](const std::string& name,
+                            const std::string& ID,
+                            TreeNode::Ptr parent) -> TreeNode::Ptr
     {
-
+        NodeConfiguration config;
+        config.registration_ID = ID;
+        config.blackboard = blackboard;
 
         TreeNode::Ptr child_node;
 
         if( _p->factory.builders().count(ID) != 0)
         {
-            child_node = _p->factory.instantiateTreeNode(ID, name, params, blackboard);
+            child_node = _p->factory.instantiateTreeNode(name, config);
         }
         else if( _p->tree_roots.count(ID) != 0) {
             child_node = std::unique_ptr<TreeNode>( new DecoratorSubtreeNode(name) );
@@ -417,7 +416,6 @@ TreeNode::Ptr XMLParser::instantiateTree(std::vector<TreeNode::Ptr>& nodes,
 }
 
 TreeNode::Ptr BT::XMLParser::Pimpl::treeParsing(const tinyxml2::XMLElement* root_element,
-                                                const NodeBuilder& node_builder,
                                                 std::vector<TreeNode::Ptr>& nodes,
                                                 const TreeNode::Ptr& root_parent)
 {
@@ -426,11 +424,12 @@ TreeNode::Ptr BT::XMLParser::Pimpl::treeParsing(const tinyxml2::XMLElement* root
     std::function<TreeNode::Ptr(const TreeNode::Ptr&, const tinyxml2::XMLElement*)> recursiveStep;
 
     recursiveStep = [&](const TreeNode::Ptr& parent,
-                        const tinyxml2::XMLElement* element) -> TreeNode::Ptr {
+                        const tinyxml2::XMLElement* element) -> TreeNode::Ptr
+    {
         const std::string element_name = element->Name();
         std::string node_ID;
-        std::string node_alias;
-        NodeParameters node_params;
+        std::string instance_name;
+        NodeConfiguration node_config;
 
         // Actions and Decorators have their own ID
         if (element_name == "Action" || element_name == "Decorator" || element_name == "Condition")
@@ -445,16 +444,16 @@ TreeNode::Ptr BT::XMLParser::Pimpl::treeParsing(const tinyxml2::XMLElement* root
         const char* attr_alias = element->Attribute("name");
         if (attr_alias)
         {
-            node_alias = attr_alias;
+            instance_name = attr_alias;
         }
         else
         {
-            node_alias = node_ID;
+            instance_name = node_ID;
         }
 
         if (element_name == "SubTree")
         {
-            node_alias = element->Attribute("ID");
+            instance_name = element->Attribute("ID");
         }
 
         for (const XMLAttribute* att = element->FirstAttribute(); att; att = att->Next())
@@ -462,11 +461,14 @@ TreeNode::Ptr BT::XMLParser::Pimpl::treeParsing(const tinyxml2::XMLElement* root
             const std::string attribute_name = att->Name();
             if (attribute_name != "ID" && attribute_name != "name")
             {
-                node_params[attribute_name] = att->Value();
+                node_config.ports_remapping[attribute_name] = att->Value();
             }
         }
 
-        TreeNode::Ptr node = node_builder(node_ID, node_alias, node_params, parent);
+        node_config.registration_ID = node_ID;
+        node_config.blackboard = bb;
+
+        TreeNode::Ptr node = node_builder(instance_name, node_config, parent);
         nodes.push_back(node);
 
         for (auto child_element = element->FirstChildElement(); child_element;
@@ -483,11 +485,8 @@ TreeNode::Ptr BT::XMLParser::Pimpl::treeParsing(const tinyxml2::XMLElement* root
     return root;
 }
 
-void XMLParser::Pimpl::openIncludedFiles()
-{
 
-}
-
+/*
 std::string writeXML(const BehaviorTreeFactory& factory,
                      const TreeNode* root_node,
                      bool compact_representation)
@@ -538,7 +537,7 @@ std::string writeXML(const BehaviorTreeFactory& factory,
                 element->SetAttribute("name", node_name.c_str());
             }
 
-            for (const auto& param : node->initializationParameters())
+            for (const auto& param : node->config())
             {
                 element->SetAttribute(param.first.c_str(), param.second.c_str());
             }
@@ -615,5 +614,5 @@ Tree buildTreeFromFile(const BehaviorTreeFactory& factory, const std::string& fi
     auto root = parser.instantiateTree(nodes, blackboard);
     return Tree(root.get(), nodes);
 }
-
+*/
 }
